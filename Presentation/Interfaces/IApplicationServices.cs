@@ -12,6 +12,6 @@ namespace NullReferencesDemo.Presentation.Interfaces
         void Deposit(decimal amount);
         decimal LoggedInUserBalance { get; }
         IEnumerable<StockItem> GetAvailableItems();
-        Receipt Purchase(string itemName);
+        IPurchaseReport Purchase(string itemName);
     }
 }

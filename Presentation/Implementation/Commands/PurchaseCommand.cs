@@ -3,7 +3,7 @@ using System;
 
 namespace NullReferencesDemo.Presentation.Implementation.Commands
 {
-    internal class PurchaseCommand: ICommand
+    internal class PurchaseCommand : ICommand
     {
 
         private readonly IApplicationServices appServices;
@@ -21,12 +21,9 @@ namespace NullReferencesDemo.Presentation.Implementation.Commands
             Console.Write("Enter item name: ");
             string itemName = Console.ReadLine();
 
-            Receipt receipt = this.appServices.Purchase(itemName);
+            IPurchaseReport report = this.appServices.Purchase(itemName);
 
-            if (receipt == null)
-                Console.WriteLine("Purchase failed.");
-            else
-                DisplayReceipt(receipt);
+            DisplayReport(report);
 
         }
 
@@ -39,9 +36,9 @@ namespace NullReferencesDemo.Presentation.Implementation.Commands
             Console.WriteLine();
         }
 
-        private void DisplayReceipt(Receipt receipt)
+        private void DisplayReport(IPurchaseReport report)
         {
-            Console.WriteLine("Thank you for buying {0} for {1:C}.", receipt.ItemName, receipt.Price);
+            Console.WriteLine(report.ToUiText());
         }
     }
 }

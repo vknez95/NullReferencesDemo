@@ -1,5 +1,6 @@
 ﻿using NullReferencesDemo.Application.Interfaces;
 using NullReferencesDemo.Presentation.Interfaces;
+using NullReferencesDemo.Presentation.PurchaseReports;
 using System;
 using System.Collections.Generic;
 
@@ -82,11 +83,11 @@ namespace NullReferencesDemo.Application.Implementation
             return this.domainServices.GetAvailableItems();
         }
 
-        public Receipt Purchase(string itemName)
+        public IPurchaseReport Purchase(string itemName)
         {
 
             if (!this.IsUserLoggedIn)
-                return null;
+                return FailedPurchase.Instance;
             
             return this.domainServices.Purchase(this.loggedInUsername, itemName);
         

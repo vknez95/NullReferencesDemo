@@ -1,6 +1,7 @@
 ﻿using NullReferencesDemo.Application.Interfaces;
 using NullReferencesDemo.Domain.Interfaces;
 using NullReferencesDemo.Presentation.Interfaces;
+using NullReferencesDemo.Presentation.PurchaseReports;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,18 +53,18 @@ namespace NullReferencesDemo.Domain.Implementation
             return this.productRepository.GetAll().Select(product => new StockItem(product.Name, product.Price));
         }
 
-        public Receipt Purchase(string username, string itemName)
+        public IPurchaseReport Purchase(string username, string itemName)
         {
 
             IProduct product = this.productRepository.Find(itemName);
 
             if (product == null)
-                return null;
+                return FailedPurchase.Instance;
 
             IUser user = this.userRepository.Find(username);
 
             if (user == null)
-                return null;
+                return FailedPurchase.Instance;
 
             return user.Purchase(product);
         

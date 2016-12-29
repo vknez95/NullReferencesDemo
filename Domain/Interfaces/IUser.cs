@@ -6,6 +6,6 @@ namespace NullReferencesDemo.Domain.Interfaces
         string Username { get; }
         void Deposit(decimal amount);
         decimal Balance { get; }
-        Receipt Purchase(IProduct product);
+        IPurchaseReport Purchase(IProduct product);
     }
 }
