@@ -4,15 +4,17 @@ using NullReferencesDemo.Presentation.PurchaseReports;
 
 namespace NullReferencesDemo.Domain.Implementation
 {
-    internal class User: IUser
+    internal class User : IUser
     {
         public string Username { get; private set; }
         private readonly IAccount account;
+        private readonly IPurchaseReportFactory reportFactory;
 
-        public User(string username, IAccount account)
+        public User(string username, IAccount account, IPurchaseReportFactory reportFactory)
         {
             this.Username = username;
             this.account = account;
+            this.reportFactory = reportFactory;
         }
 
         public void Deposit(decimal amount)
@@ -34,9 +36,9 @@ namespace NullReferencesDemo.Domain.Implementation
             MoneyTransaction transaction = this.account.Withdraw(product.Price);
 
             if (transaction == null)
-                return FailedPurchase.Instance;
+                return this.reportFactory.CreateNotEnoughMoney(this.Username, product.Name, product.Price);
 
-            return new Receipt(product.Name, product.Price);
+            return this.reportFactory.CreateReport(this.Username, product.Name, product.Price);
 
         }
     }

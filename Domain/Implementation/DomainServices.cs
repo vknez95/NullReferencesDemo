@@ -13,18 +13,20 @@ namespace NullReferencesDemo.Domain.Implementation
 
         private readonly IUserRepository userRepository;
         private readonly IProductRepository productRepository;
+        private readonly IPurchaseReportFactory reportFactory;
 
-        public DomainServices(IUserRepository userRepository, IProductRepository productRepository)
+        public DomainServices(IUserRepository userRepository, IProductRepository productRepository, IPurchaseReportFactory reportFactory)
         {
             this.userRepository = userRepository;
             this.productRepository = productRepository;
+            this.reportFactory = reportFactory;
         }
 
         public void CreateUser(string username)
         {
             
             IAccount userAccount = new Account();
-            IUser user = new User(username, userAccount);
+            IUser user = new User(username, userAccount, this.reportFactory);
 
             this.userRepository.Add(user);
         
@@ -59,12 +61,12 @@ namespace NullReferencesDemo.Domain.Implementation
             IProduct product = this.productRepository.Find(itemName);
 
             if (product == null)
-                return FailedPurchase.Instance;
+                return this.reportFactory.CreateProductNotFound(username, itemName);
 
             IUser user = this.userRepository.Find(username);
 
             if (user == null)
-                return FailedPurchase.Instance;
+                return this.reportFactory.CreateNotRegistered(username);
 
             return user.Purchase(product);
         
