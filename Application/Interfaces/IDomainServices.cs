@@ -10,6 +10,6 @@ namespace NullReferencesDemo.Application.Interfaces
         void Deposit(string username, decimal amount);
         decimal GetBalance(string username);
         IEnumerable<StockItem> GetAvailableItems();
-        Receipt Purchase(string username, string itemName);
+        IPurchaseReport Purchase(string username, string itemName);
     }
 }

@@ -1,7 +1,6 @@
 ﻿using NullReferencesDemo.Application.Interfaces;
 using NullReferencesDemo.Domain.Interfaces;
 using NullReferencesDemo.Presentation.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using NullReferencesDemo.Common;
@@ -67,7 +66,7 @@ namespace NullReferencesDemo.Domain.Implementation
                     .Select(product => new StockItem(product.Name, product.Price));
         }
 
-        public Receipt Purchase(string username, string itemName)
+        public IPurchaseReport Purchase(string username, string itemName)
         {
             return
                 this.productRepository
@@ -77,13 +76,13 @@ namespace NullReferencesDemo.Domain.Implementation
                     .Single();
         }
 
-        public Receipt Purchase(string username, IProduct product)
+        public IPurchaseReport Purchase(string username, IProduct product)
         {
             return
                 this.userRepository
                     .Find(username)
                     .Select(user => user.Purchase(product))
-                    .DefaultIfEmpty(this.reportFactory.CreateNonRegistered(username))
+                    .DefaultIfEmpty(this.reportFactory.CreateNotRegistered(username))
                     .Single();
         }
     }

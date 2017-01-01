@@ -1,5 +1,6 @@
 ﻿using NullReferencesDemo.Application.Interfaces;
 using NullReferencesDemo.Presentation.Interfaces;
+using NullReferencesDemo.Presentation.PurchaseReports;
 using System;
 using System.Collections.Generic;
 
@@ -9,12 +10,14 @@ namespace NullReferencesDemo.Application.Implementation
     {
 
         private readonly IDomainServices domainServices;
+        private readonly IPurchaseReportFactory reportFactory;
         private string loggedInUsername;
 
-        public ApplicationServices(IDomainServices domainServices)
+        public ApplicationServices(IDomainServices domainServices, IPurchaseReportFactory reportFactory)
         {
             this.domainServices = domainServices;
             this.loggedInUsername = string.Empty;
+            this.reportFactory = reportFactory;
         }
 
         public void RegisterUser(string username)
@@ -82,11 +85,11 @@ namespace NullReferencesDemo.Application.Implementation
             return this.domainServices.GetAvailableItems();
         }
 
-        public Receipt Purchase(string itemName)
+        public IPurchaseReport Purchase(string itemName)
         {
 
             if (!this.IsUserLoggedIn)
-                return null;
+                return this.reportFactory.CreateNotSignedIn();
             
             return this.domainServices.Purchase(this.loggedInUsername, itemName);
         
