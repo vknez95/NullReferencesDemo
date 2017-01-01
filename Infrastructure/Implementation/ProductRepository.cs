@@ -4,14 +4,14 @@ using System.Linq;
 
 namespace NullReferencesDemo.Infrastructure.Implementation
 {
-    public class ProductRepository: IProductRepository
+    public class ProductRepository : IProductRepository
     {
 
         private IDictionary<string, decimal> nameToPrice;
 
         public ProductRepository()
         {
-            
+
             this.nameToPrice = new Dictionary<string, decimal>();
 
             this.nameToPrice.Add("book", 27.46M);
@@ -25,15 +25,13 @@ namespace NullReferencesDemo.Infrastructure.Implementation
             return this.nameToPrice.Select(pair => new ProductData(pair.Key, pair.Value));
         }
 
-        public IProduct Find(string name)
+        public IEnumerable<IProduct> Find(string name)
         {
-            
             decimal price;
             if (this.nameToPrice.TryGetValue(name, out price))
-                return new ProductData(name, price);
+                return new[] { new ProductData(name, price) };
 
-            return null;
-
+            return new IProduct[0];
         }
     }
 }

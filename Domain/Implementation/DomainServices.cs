@@ -4,70 +4,87 @@ using NullReferencesDemo.Presentation.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NullReferencesDemo.Common;
 
 namespace NullReferencesDemo.Domain.Implementation
 {
-    public class DomainServices: IDomainServices
+    public class DomainServices : IDomainServices
     {
 
         private readonly IUserRepository userRepository;
         private readonly IProductRepository productRepository;
+        private readonly IPurchaseReportFactory reportFactory;
 
-        public DomainServices(IUserRepository userRepository, IProductRepository productRepository)
+        public DomainServices(IUserRepository userRepository,
+                                IProductRepository productRepository,
+                                IPurchaseReportFactory reportFactory)
         {
             this.userRepository = userRepository;
             this.productRepository = productRepository;
+            this.reportFactory = reportFactory;
         }
 
         public void CreateUser(string username)
         {
-            
+
             IAccount userAccount = new Account();
-            IUser user = new User(username, userAccount);
+            IUser user = new User(username, userAccount, this.reportFactory);
 
             this.userRepository.Add(user);
-        
+
         }
 
         public bool IsRegistered(string username)
         {
-            IUser user = this.userRepository.Find(username);
-            return user != null;
+            return
+                this.userRepository
+                    .Find(username)
+                    .Any();
         }
 
         public void Deposit(string username, decimal amount)
         {
-            IUser user = this.userRepository.Find(username);
-            user.Deposit(amount);
+            this.userRepository
+                .Find(username)
+                .ForEach(user => user.Deposit(amount));
         }
 
         public decimal GetBalance(string username)
         {
-            IUser user = this.userRepository.Find(username);
-            return user.Balance;
+            return
+                this.userRepository
+                    .Find(username)
+                    .Select(user => user.Balance)
+                    .DefaultIfEmpty(0)
+                    .Single();
         }
 
         public IEnumerable<StockItem> GetAvailableItems()
         {
-            return this.productRepository.GetAll().Select(product => new StockItem(product.Name, product.Price));
+            return
+                this.productRepository
+                    .GetAll()
+                    .Select(product => new StockItem(product.Name, product.Price));
         }
 
         public Receipt Purchase(string username, string itemName)
         {
-
-            IProduct product = this.productRepository.Find(itemName);
-
-            if (product == null)
-                return null;
-
-            IUser user = this.userRepository.Find(username);
-
-            if (user == null)
-                return null;
-
-            return user.Purchase(product);
-        
+            return
+                this.productRepository
+                    .Find(username)
+                    .Select(product => Purchase(username, product))
+                    .DefaultIfEmpty(this.reportFactory.CreateProductNotFound(username, itemName))
+                    .Single();
         }
 
+        public Receipt Purchase(string username, IProduct product)
+        {
+            return
+                this.userRepository
+                    .Find(username)
+                    .Select(user => user.Purchase(product))
+                    .DefaultIfEmpty(this.reportFactory.CreateNonRegistered(username))
+                    .Single();
+        }
     }
 }
