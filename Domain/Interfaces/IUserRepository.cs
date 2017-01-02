@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
+using NullReferencesDemo.Common;
 
 namespace NullReferencesDemo.Domain.Interfaces
 {
     public interface IUserRepository
     {
         void Add(IUser user);
-        IEnumerable<IUser> Find(string username);
+        Option<IUser> TryFind(string username);
     }
 }

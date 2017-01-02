@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using NullReferencesDemo.Domain.Interfaces;
+using NullReferencesDemo.Common;
 
 namespace NullReferencesDemo.Infrastructure.Implementation
 {
@@ -14,15 +15,15 @@ namespace NullReferencesDemo.Infrastructure.Implementation
             this.usernameToUser.Add(user.Username, user);
         }
 
-        public IEnumerable<IUser> Find(string username)
+        public Option<IUser> TryFind(string username)
         {
 
             IUser user = null;
 
             if (!this.usernameToUser.TryGetValue(username, out user))
-                return new IUser[0];
+                return Option<IUser>.CreateEmpty();
 
-            return new[] { user };
+            return Option<IUser>.Create(user);
         }
     }
 }

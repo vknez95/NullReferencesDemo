@@ -1,6 +1,7 @@
 ﻿using NullReferencesDemo.Domain.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
+using NullReferencesDemo.Common;
 
 namespace NullReferencesDemo.Infrastructure.Implementation
 {
@@ -25,13 +26,13 @@ namespace NullReferencesDemo.Infrastructure.Implementation
             return this.nameToPrice.Select(pair => new ProductData(pair.Key, pair.Value));
         }
 
-        public IEnumerable<IProduct> Find(string name)
+        public Option<IProduct> TryFind(string name)
         {
             decimal price;
             if (this.nameToPrice.TryGetValue(name, out price))
-                return new[] { new ProductData(name, price) };
+                return Option<IProduct>.Create(new ProductData(name, price));
 
-            return new IProduct[0];
+            return Option<IProduct>.CreateEmpty();
         }
     }
 }

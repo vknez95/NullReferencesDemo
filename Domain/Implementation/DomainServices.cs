@@ -37,14 +37,14 @@ namespace NullReferencesDemo.Domain.Implementation
         {
             return
                 this.userRepository
-                    .Find(username)
+                    .TryFind(username)
                     .Any();
         }
 
         public void Deposit(string username, decimal amount)
         {
             this.userRepository
-                .Find(username)
+                .TryFind(username)
                 .ForEach(user => user.Deposit(amount));
         }
 
@@ -52,7 +52,7 @@ namespace NullReferencesDemo.Domain.Implementation
         {
             return
                 this.userRepository
-                    .Find(username)
+                    .TryFind(username)
                     .Select(user => user.Balance)
                     .DefaultIfEmpty(0)
                     .Single();
@@ -70,7 +70,7 @@ namespace NullReferencesDemo.Domain.Implementation
         {
             return
                 this.productRepository
-                    .Find(username)
+                    .TryFind(username)
                     .Select(product => Purchase(username, product))
                     .DefaultIfEmpty(this.reportFactory.CreateProductNotFound(username, itemName))
                     .Single();
@@ -80,7 +80,7 @@ namespace NullReferencesDemo.Domain.Implementation
         {
             return
                 this.userRepository
-                    .Find(username)
+                    .TryFind(username)
                     .Select(user => user.Purchase(product))
                     .DefaultIfEmpty(this.reportFactory.CreateNotRegistered(username))
                     .Single();
