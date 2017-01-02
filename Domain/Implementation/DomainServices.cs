@@ -70,13 +70,13 @@ namespace NullReferencesDemo.Domain.Implementation
         {
             return
                 this.productRepository
-                    .TryFind(username)
+                    .TryFind(itemName)
                     .Select(product => Purchase(username, product))
                     .DefaultIfEmpty(this.reportFactory.CreateProductNotFound(username, itemName))
                     .Single();
         }
 
-        public IPurchaseReport Purchase(string username, IProduct product)
+        private IPurchaseReport Purchase(string username, IProduct product)
         {
             return
                 this.userRepository
