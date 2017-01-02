@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using NullReferencesDemo.Presentation.Interfaces;
 using NullReferencesDemo.Presentation.Implementation.Commands;
+using NullReferencesDemo.Common;
 
 namespace NullReferencesDemo.Presentation.Implementation
 {
-    public class UserInterface: IUserInterface
+    public class UserInterface : IUserInterface
     {
 
         private readonly IApplicationServices appServices;
@@ -35,12 +36,14 @@ namespace NullReferencesDemo.Presentation.Implementation
 
             this.RefreshDisplay();
 
-            MenuItem selectedMenuItem = SelectMenuItem();
+            ConsoleKeyInfo key = Console.ReadKey(true);
 
-            if (selectedMenuItem.IsTerminalCommand)
+            ICommand command = ReadCommand(key);
+
+            if (command is DoNothingCommand)
                 return false;
 
-            this.currentCommand = selectedMenuItem.Command;
+            this.currentCommand = command;
             return true;
 
         }
@@ -54,7 +57,7 @@ namespace NullReferencesDemo.Presentation.Implementation
 
         public void ExecuteCommand()
         {
-            
+
             this.currentCommand.Execute();
 
             Console.WriteLine();
@@ -65,13 +68,13 @@ namespace NullReferencesDemo.Presentation.Implementation
 
         private void ShowStatus()
         {
-            
+
             Console.Write("Logged in user: ");
-            this.Highlight(this.LoggedInUserDisplay);
+            ConsoleEx.WriteAndHighlight(this.LoggedInUserDisplay, ConsoleColor.Cyan);
             Console.WriteLine();
 
             Console.Write("       Balance: ");
-            this.Highlight(this.BalanceDisplay);
+            ConsoleEx.WriteAndHighlight(this.BalanceDisplay, ConsoleColor.Cyan);
             Console.WriteLine();
 
             Console.WriteLine();
@@ -98,17 +101,9 @@ namespace NullReferencesDemo.Presentation.Implementation
             }
         }
 
-        private void Highlight(string message)
-        {
-            ConsoleColor prevColor = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write(message);
-            Console.ForegroundColor = prevColor;
-        }
-
         private void ShowMenu()
         {
-            
+
             Console.WriteLine("Select operation:");
             Console.WriteLine();
 
@@ -119,14 +114,23 @@ namespace NullReferencesDemo.Presentation.Implementation
 
         }
 
-        private MenuItem SelectMenuItem()
+        private ICommand ReadCommand(ConsoleKeyInfo key)
+        {
+            return
+                this.TrySelectMenuItem(key)
+                    .Select(menuItem => menuItem.Command)
+                    .DefaultIfEmpty(new NonExistentCommand(key.KeyChar))
+                    .Single();
+        }
+
+        private Option<MenuItem> TrySelectMenuItem(ConsoleKeyInfo key)
         {
 
-            ConsoleKeyInfo key = Console.ReadKey(true);
+            MenuItem selectedItem = this.menu.FirstOrDefault(item => item.MatchesKey(key.KeyChar));
 
-            MenuItem selectedItem = this.menu.Single(item => item.MatchesKey(key.KeyChar));
-
-            return selectedItem;
+            if (selectedItem == null)
+                return Option<MenuItem>.CreateEmpty();
+            return Option<MenuItem>.Create(selectedItem);
 
         }
     }
