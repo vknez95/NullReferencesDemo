@@ -101,7 +101,7 @@ namespace NullReferencesDemo.Presentation.Implementation
         private void Highlight(string message)
         {
             ConsoleColor prevColor = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.Cyan;
             Console.Write(message);
             Console.ForegroundColor = prevColor;
         }
