@@ -1,18 +1,18 @@
-﻿using NullReferencesDemo.Domain.Interfaces;
+﻿using NullReferencesDemo.Common;
+using NullReferencesDemo.Domain.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
-using NullReferencesDemo.Common;
 
 namespace NullReferencesDemo.Infrastructure.Implementation
 {
-    public class ProductRepository : IProductRepository
+    public class ProductRepository: IProductRepository
     {
 
         private IDictionary<string, decimal> nameToPrice;
 
         public ProductRepository()
         {
-
+            
             this.nameToPrice = new Dictionary<string, decimal>();
 
             this.nameToPrice.Add("book", 27.46M);
@@ -28,11 +28,13 @@ namespace NullReferencesDemo.Infrastructure.Implementation
 
         public Option<IProduct> TryFind(string name)
         {
+            
             decimal price;
             if (this.nameToPrice.TryGetValue(name, out price))
                 return Option<IProduct>.Create(new ProductData(name, price));
 
             return Option<IProduct>.CreateEmpty();
+
         }
     }
 }

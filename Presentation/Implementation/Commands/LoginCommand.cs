@@ -1,5 +1,6 @@
 ﻿using NullReferencesDemo.Presentation.Interfaces;
 using System;
+using NullReferencesDemo.Presentation.Implementation.CommandResults;
 
 namespace NullReferencesDemo.Presentation.Implementation.Commands
 {
@@ -13,16 +14,17 @@ namespace NullReferencesDemo.Presentation.Implementation.Commands
             this.appServices = appServices;
         }
 
-        public void Execute()
+        public ICommandResult Execute()
         {
 
             Console.Write("Enter username: ");
             string username = Console.ReadLine();
 
             if (this.appServices.Login(username))
-                Console.WriteLine("User '{0}' is now logged in.", username);
-            else
-                Console.WriteLine("Login failed for user '{0}'.", username);
+                return new UserLoggedIn(username,
+                                        this.appServices.LoggedInUserBalance);
+
+            return new LoginFailed(username);
 
         }
     }

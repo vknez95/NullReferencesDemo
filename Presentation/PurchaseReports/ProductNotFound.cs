@@ -1,26 +1,17 @@
 ﻿using NullReferencesDemo.Presentation.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NullReferencesDemo.Presentation.PurchaseReports
 {
-    internal class ProductNotFound : IPurchaseReport
+    public class ProductNotFound: IPurchaseReport
     {
-        private readonly string username;
-        private readonly string productName;
+
+        public string Username { get; }
+        public string ProductName { get; }
 
         public ProductNotFound(string username, string productName)
         {
-            this.username = username;
-            this.productName = productName;
-        }
-
-        public string ToUiText()
-        {
-            return string.Format("Dear {0},\nSorry to inform you that we have no {1} left.", this.username, this.productName);
+            this.Username = username;
+            this.ProductName = productName;
         }
     }
 }

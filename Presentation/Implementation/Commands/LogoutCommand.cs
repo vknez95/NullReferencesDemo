@@ -1,5 +1,6 @@
 ﻿using NullReferencesDemo.Presentation.Interfaces;
 using System;
+using NullReferencesDemo.Presentation.Implementation.CommandResults;
 
 namespace NullReferencesDemo.Presentation.Implementation.Commands
 {
@@ -13,10 +14,15 @@ namespace NullReferencesDemo.Presentation.Implementation.Commands
             this.appServices = appServices;
         }
 
-        public void Execute()
+        public ICommandResult Execute()
         {
+
+            string username = this.appServices.LoggedInUsername;
+
             this.appServices.Logout();
-            Console.WriteLine("User is now logged out.");
+
+            return new UserLoggedOut(username);
+
         }
     }
 }

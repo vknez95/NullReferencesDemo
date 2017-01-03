@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using NullReferencesDemo.Presentation.Interfaces;
 using NullReferencesDemo.Presentation.Implementation.Commands;
-using NullReferencesDemo.Common;
 
 namespace NullReferencesDemo.Presentation.Implementation
 {
-    public class UserInterface : IUserInterface
+    public class UserInterface: IUserInterface
     {
 
         private readonly IApplicationServices appServices;
         private ICommand currentCommand = new DoNothingCommand();
         private readonly IEnumerable<MenuItem> menu;
 
-        public UserInterface(IApplicationServices appServices)
+        private readonly ViewLocator viewLocator;
+
+        public UserInterface(IApplicationServices appServices, ViewLocator viewLocator)
         {
 
             this.appServices = appServices;
@@ -29,6 +30,8 @@ namespace NullReferencesDemo.Presentation.Implementation
                 MenuItem.CreateTerminal("Quit", 'Q')
             };
 
+            this.viewLocator = viewLocator;
+
         }
 
         public bool ReadCommand()
@@ -36,14 +39,12 @@ namespace NullReferencesDemo.Presentation.Implementation
 
             this.RefreshDisplay();
 
-            ConsoleKeyInfo key = Console.ReadKey(true);
+            MenuItem selectedMenuItem = SelectMenuItem();
 
-            ICommand command = ReadCommand(key);
-
-            if (command is DoNothingCommand)
+            if (selectedMenuItem.IsTerminalCommand)
                 return false;
 
-            this.currentCommand = command;
+            this.currentCommand = selectedMenuItem.Command;
             return true;
 
         }
@@ -57,8 +58,12 @@ namespace NullReferencesDemo.Presentation.Implementation
 
         public void ExecuteCommand()
         {
+            
+            ICommandResult result = this.currentCommand.Execute();
 
-            this.currentCommand.Execute();
+            IView view = this.viewLocator.LocateServiceFor(result);
+
+            Render(view);
 
             Console.WriteLine();
             Console.Write("Press ENTER to continue...");
@@ -66,15 +71,29 @@ namespace NullReferencesDemo.Presentation.Implementation
 
         }
 
-        private void ShowStatus()
+        private void Render(IView view)
         {
 
+            string message = string.Format("Rendering {0}", view.GetType().Name);
+            string delimiter = new string('-', message.Length);
+
+            Console.WriteLine("\n{0}\n{1}\n{0}\n", delimiter, message);
+
+            view.Render();
+
+            Console.WriteLine("\n{0}", delimiter);
+
+        }
+
+        private void ShowStatus()
+        {
+            
             Console.Write("Logged in user: ");
-            ConsoleEx.WriteAndHighlight(this.LoggedInUserDisplay, ConsoleColor.Cyan);
+            this.Highlight(this.LoggedInUserDisplay);
             Console.WriteLine();
 
             Console.Write("       Balance: ");
-            ConsoleEx.WriteAndHighlight(this.BalanceDisplay, ConsoleColor.Cyan);
+            this.Highlight(this.BalanceDisplay);
             Console.WriteLine();
 
             Console.WriteLine();
@@ -101,9 +120,17 @@ namespace NullReferencesDemo.Presentation.Implementation
             }
         }
 
+        private void Highlight(string message)
+        {
+            ConsoleColor prevColor = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write(message);
+            Console.ForegroundColor = prevColor;
+        }
+
         private void ShowMenu()
         {
-
+            
             Console.WriteLine("Select operation:");
             Console.WriteLine();
 
@@ -114,23 +141,14 @@ namespace NullReferencesDemo.Presentation.Implementation
 
         }
 
-        private ICommand ReadCommand(ConsoleKeyInfo key)
-        {
-            return
-                this.TrySelectMenuItem(key)
-                    .Select(menuItem => menuItem.Command)
-                    .DefaultIfEmpty(new NonExistentCommand(key.KeyChar))
-                    .Single();
-        }
-
-        private Option<MenuItem> TrySelectMenuItem(ConsoleKeyInfo key)
+        private MenuItem SelectMenuItem()
         {
 
-            MenuItem selectedItem = this.menu.FirstOrDefault(item => item.MatchesKey(key.KeyChar));
+            ConsoleKeyInfo key = Console.ReadKey(true);
 
-            if (selectedItem == null)
-                return Option<MenuItem>.CreateEmpty();
-            return Option<MenuItem>.Create(selectedItem);
+            MenuItem selectedItem = this.menu.Single(item => item.MatchesKey(key.KeyChar));
+
+            return selectedItem;
 
         }
     }

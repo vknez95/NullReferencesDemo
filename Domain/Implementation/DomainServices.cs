@@ -1,13 +1,15 @@
 ﻿using NullReferencesDemo.Application.Interfaces;
 using NullReferencesDemo.Domain.Interfaces;
 using NullReferencesDemo.Presentation.Interfaces;
+using NullReferencesDemo.Presentation.PurchaseReports;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NullReferencesDemo.Common;
 
 namespace NullReferencesDemo.Domain.Implementation
 {
-    public class DomainServices : IDomainServices
+    public class DomainServices: IDomainServices
     {
 
         private readonly IUserRepository userRepository;
@@ -15,8 +17,8 @@ namespace NullReferencesDemo.Domain.Implementation
         private readonly IPurchaseReportFactory reportFactory;
 
         public DomainServices(IUserRepository userRepository,
-                                IProductRepository productRepository,
-                                IPurchaseReportFactory reportFactory)
+                              IProductRepository productRepository,
+                              IPurchaseReportFactory reportFactory)
         {
             this.userRepository = userRepository;
             this.productRepository = productRepository;
@@ -25,26 +27,26 @@ namespace NullReferencesDemo.Domain.Implementation
 
         public void CreateUser(string username)
         {
-
+            
             IAccount userAccount = new Account();
             IUser user = new User(username, userAccount, this.reportFactory);
 
             this.userRepository.Add(user);
-
+        
         }
 
         public bool IsRegistered(string username)
         {
             return
                 this.userRepository
-                    .TryFind(username)
+                    .Find(username)
                     .Any();
         }
 
         public void Deposit(string username, decimal amount)
         {
             this.userRepository
-                .TryFind(username)
+                .Find(username)
                 .ForEach(user => user.Deposit(amount));
         }
 
@@ -52,7 +54,7 @@ namespace NullReferencesDemo.Domain.Implementation
         {
             return
                 this.userRepository
-                    .TryFind(username)
+                    .Find(username)
                     .Select(user => user.Balance)
                     .DefaultIfEmpty(0)
                     .Single();
@@ -60,10 +62,7 @@ namespace NullReferencesDemo.Domain.Implementation
 
         public IEnumerable<StockItem> GetAvailableItems()
         {
-            return
-                this.productRepository
-                    .GetAll()
-                    .Select(product => new StockItem(product.Name, product.Price));
+            return this.productRepository.GetAll().Select(product => new StockItem(product.Name, product.Price));
         }
 
         public IPurchaseReport Purchase(string username, string itemName)
@@ -80,10 +79,11 @@ namespace NullReferencesDemo.Domain.Implementation
         {
             return
                 this.userRepository
-                    .TryFind(username)
+                    .Find(username)
                     .Select(user => user.Purchase(product))
-                    .DefaultIfEmpty(this.reportFactory.CreateNotRegistered(username))
+                    .LazyDefaultIfEmpty(() => this.reportFactory.CreateNotRegistered(username))
                     .Single();
         }
+
     }
 }

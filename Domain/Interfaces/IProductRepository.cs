@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using NullReferencesDemo.Common;
+﻿using NullReferencesDemo.Common;
+using System.Collections.Generic;
 
 namespace NullReferencesDemo.Domain.Interfaces
 {

@@ -1,9 +1,10 @@
 ﻿using NullReferencesDemo.Presentation.Interfaces;
 using System;
+using NullReferencesDemo.Presentation.Implementation.CommandResults;
 
 namespace NullReferencesDemo.Presentation.Implementation.Commands
 {
-    internal class PurchaseCommand : ICommand
+    internal class PurchaseCommand: ICommand
     {
 
         private readonly IApplicationServices appServices;
@@ -13,7 +14,7 @@ namespace NullReferencesDemo.Presentation.Implementation.Commands
             this.appServices = appServices;
         }
 
-        public void Execute()
+        public ICommandResult Execute()
         {
 
             this.ShowStock();
@@ -23,7 +24,7 @@ namespace NullReferencesDemo.Presentation.Implementation.Commands
 
             IPurchaseReport report = this.appServices.Purchase(itemName);
 
-            DisplayReport(report);
+            return new PurchaseResult(report);
 
         }
 
@@ -34,11 +35,6 @@ namespace NullReferencesDemo.Presentation.Implementation.Commands
                 Console.WriteLine("{0,10} {1:C}", item.Name, item.Price);
             Console.WriteLine();
             Console.WriteLine();
-        }
-
-        private void DisplayReport(IPurchaseReport report)
-        {
-            Console.WriteLine(report.ToUiText());
         }
     }
 }

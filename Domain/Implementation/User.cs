@@ -4,7 +4,7 @@ using NullReferencesDemo.Presentation.PurchaseReports;
 
 namespace NullReferencesDemo.Domain.Implementation
 {
-    internal class User : IUser
+    internal class User: IUser
     {
         public string Username { get; private set; }
         private readonly IAccount account;
@@ -36,9 +36,10 @@ namespace NullReferencesDemo.Domain.Implementation
             MoneyTransaction transaction = this.account.Withdraw(product.Price);
 
             if (transaction == null)
-                return this.reportFactory.CreateNotEnoughMoney(this.Username, product.Name, product.Price);
+                return this.reportFactory.CreateNotEnoughMoney(this.Username, product.Name,
+                                                               product.Price);
 
-            return this.reportFactory.CreateReport(this.Username, product.Name, product.Price);
+            return new Receipt(this.Username, product.Name, product.Price);
 
         }
     }

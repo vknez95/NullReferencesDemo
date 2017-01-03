@@ -1,4 +1,5 @@
 ﻿using System;
+using NullReferencesDemo.Presentation.Implementation.CommandResults;
 using NullReferencesDemo.Presentation.Interfaces;
 
 namespace NullReferencesDemo.Presentation.Implementation.Commands
@@ -13,7 +14,7 @@ namespace NullReferencesDemo.Presentation.Implementation.Commands
             this.appServices = appServices;
         }
 
-        public void Execute()
+        public ICommandResult Execute()
         {
             
             Console.Write("Enter username to register: ");
@@ -21,7 +22,7 @@ namespace NullReferencesDemo.Presentation.Implementation.Commands
 
             this.appServices.RegisterUser(username);
 
-            Console.WriteLine("User '{0}' is now registered.", username);
+            return new UserRegistered(username);
 
         }
     }
