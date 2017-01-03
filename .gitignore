@@ -233,6 +233,7 @@ _Pvt_Extensions
 # FAKE - F# Make
 .fake/
 
-# App.config and csproj
+# Other
 App.config
 *.csproj
+Properties/
