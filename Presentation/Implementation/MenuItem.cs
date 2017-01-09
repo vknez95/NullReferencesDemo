@@ -44,7 +44,7 @@ namespace NullReferencesDemo.Presentation.Implementation
                 Console.Write(this.caption.Substring(0, pos));
 
             ConsoleColor previousColor = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.ForegroundColor = ConsoleColor.White;
             Console.Write(this.hotkey);
             Console.ForegroundColor = previousColor;
 

@@ -1,19 +1,18 @@
 ﻿using System;
+using NullReferencesDemo.Common;
 using NullReferencesDemo.Presentation.Interfaces;
 using NullReferencesDemo.Presentation.PurchaseReports;
 
 namespace NullReferencesDemo.Presentation.Views
 {
-    public class ReceiptView: IView
+    public class ReceiptView : IView
     {
 
         private Receipt Data { get; }
 
         public ReceiptView(Receipt data)
         {
-            
-            if (data == null)
-                throw new ArgumentNullException(nameof(data));
+            Contract.Requires<ArgumentNullException>(data != null, nameof(data));
 
             this.Data = data;
 

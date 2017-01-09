@@ -16,8 +16,7 @@ namespace NullReferencesDemo.Domain.Implementation
         private readonly IProductRepository productRepository;
         private readonly IPurchaseReportFactory reportFactory;
 
-        public DomainServices(IUserRepository userRepository,
-                              IProductRepository productRepository,
+        public DomainServices(IUserRepository userRepository, IProductRepository productRepository,
                               IPurchaseReportFactory reportFactory)
         {
             this.userRepository = userRepository;
@@ -27,8 +26,9 @@ namespace NullReferencesDemo.Domain.Implementation
 
         public void CreateUser(string username)
         {
-            
-            IAccount userAccount = new Account();
+
+            // IAccount userAccount = new DebitAccount();
+            IAccount userAccount = new CreditAccount(new FirstTransactionSelector());
             IUser user = new User(username, userAccount, this.reportFactory);
 
             this.userRepository.Add(user);
@@ -39,8 +39,8 @@ namespace NullReferencesDemo.Domain.Implementation
         {
             return
                 this.userRepository
-                    .Find(username)
-                    .Any();
+                .Find(username)
+                .Any();
         }
 
         public void Deposit(string username, decimal amount)
@@ -54,10 +54,10 @@ namespace NullReferencesDemo.Domain.Implementation
         {
             return
                 this.userRepository
-                    .Find(username)
-                    .Select(user => user.Balance)
-                    .DefaultIfEmpty(0)
-                    .Single();
+                .Find(username)
+                .Select(user => user.Balance)
+                .DefaultIfEmpty(0)
+                .Single();
         }
 
         public IEnumerable<StockItem> GetAvailableItems()
@@ -69,20 +69,20 @@ namespace NullReferencesDemo.Domain.Implementation
         {
             return
                 this.productRepository
-                    .TryFind(itemName)
-                    .Select(product => Purchase(username, product))
-                    .DefaultIfEmpty(this.reportFactory.CreateProductNotFound(username, itemName))
-                    .Single();
+                .TryFind(itemName)
+                .Select(product => Purchase(username, product))
+                .DefaultIfEmpty(this.reportFactory.CreateProductNotFound(username, itemName))
+                .Single();
         }
 
         private IPurchaseReport Purchase(string username, IProduct product)
         {
             return
                 this.userRepository
-                    .Find(username)
-                    .Select(user => user.Purchase(product))
-                    .LazyDefaultIfEmpty(() => this.reportFactory.CreateNotRegistered(username))
-                    .Single();
+                .Find(username)
+                .Select(user => user.Purchase(product))
+                .LazyDefaultIfEmpty(() => this.reportFactory.CreateNotRegistered(username))
+                .Single();
         }
 
     }

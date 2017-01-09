@@ -22,11 +22,16 @@ namespace NullReferencesDemo.Presentation.Implementation
 
             this.menu = new MenuItem[]
             {
-                MenuItem.CreateNonTerminal("Register new user", 'R', new RegisterCommand(appServices), () => true),
-                MenuItem.CreateNonTerminal("Login", 'L', new LoginCommand(appServices), () => true),
-                MenuItem.CreateNonTerminal("LogOut", 'O', new LogoutCommand(appServices), () => appServices.IsUserLoggedIn),
-                MenuItem.CreateNonTerminal("Deposit", 'D', new DepositCommand(appServices), () => appServices.IsUserLoggedIn),
-                MenuItem.CreateNonTerminal("Purchase", 'P', new PurchaseCommand(appServices), () => true),
+                MenuItem.CreateNonTerminal("Register new user", 'R',
+                    new RegisterCommand(appServices), () => true),
+                MenuItem.CreateNonTerminal("Login", 'L',
+                    new LoginCommand(appServices), () => true),
+                MenuItem.CreateNonTerminal("LogOut", 'O',
+                    new LogoutCommand(appServices), () => appServices.IsUserLoggedIn),
+                MenuItem.CreateNonTerminal("Deposit", 'D',
+                    new DepositCommand(appServices), () => appServices.IsUserLoggedIn),
+                MenuItem.CreateNonTerminal("Purchase", 'P',
+                    new PurchaseCommand(appServices), () => true),
                 MenuItem.CreateTerminal("Quit", 'Q')
             };
 
@@ -123,7 +128,7 @@ namespace NullReferencesDemo.Presentation.Implementation
         private void Highlight(string message)
         {
             ConsoleColor prevColor = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.ForegroundColor = ConsoleColor.White;
             Console.Write(message);
             Console.ForegroundColor = prevColor;
         }

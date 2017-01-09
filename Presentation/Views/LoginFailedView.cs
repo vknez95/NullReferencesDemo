@@ -1,19 +1,18 @@
 ﻿using System;
+using NullReferencesDemo.Common;
 using NullReferencesDemo.Presentation.Implementation.CommandResults;
 using NullReferencesDemo.Presentation.Interfaces;
 
 namespace NullReferencesDemo.Presentation.Views
 {
-    public class LoginFailedView: IView
+    public class LoginFailedView : IView
     {
 
         private LoginFailed Data { get; }
 
         public LoginFailedView(LoginFailed data)
         {
-
-            if (data == null)
-                throw new ArgumentNullException(nameof(data));
+            Contract.Requires<ArgumentNullException>(data != null, nameof(data));
 
             this.Data = data;
 

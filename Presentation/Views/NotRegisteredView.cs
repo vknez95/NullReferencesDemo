@@ -1,4 +1,5 @@
 ﻿using System;
+using NullReferencesDemo.Common;
 using NullReferencesDemo.Presentation.Interfaces;
 using NullReferencesDemo.Presentation.PurchaseReports;
 
@@ -11,9 +12,7 @@ namespace NullReferencesDemo.Presentation.Views
 
         public NotRegisteredView(NotRegistered data)
         {
-            
-            if (data == null)
-                throw new ArgumentNullException(nameof(data));
+            Contract.Requires<ArgumentNullException>(data != null, nameof(data));
 
             this.Data = data;
 

@@ -10,7 +10,8 @@ namespace NullReferencesDemo.Common
         private IList<Tuple<Func<TKey, bool>, Func<TKey, TService>>> Mapping { get; }
             = new List<Tuple<Func<TKey, bool>, Func<TKey, TService>>>();
 
-        public void RegisterService(Func<TKey, bool> selector, Func<TKey, TService> serviceFactory)
+        public void RegisterService(Func<TKey, bool> selector,
+                                    Func<TKey, TService> serviceFactory)
         {
             this.Mapping.Add(Tuple.Create(selector, serviceFactory));
         }
