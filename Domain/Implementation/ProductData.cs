@@ -1,6 +1,6 @@
 ﻿using NullReferencesDemo.Domain.Interfaces;
 
-namespace NullReferencesDemo.Infrastructure.Implementation
+namespace NullReferencesDemo.Domain.Implementation
 {
     internal class ProductData: IProduct
     {

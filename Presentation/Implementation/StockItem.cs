@@ -1,6 +1,8 @@
-﻿namespace NullReferencesDemo.Presentation.Interfaces
+﻿using NullReferencesDemo.Presentation.Interfaces;
+
+namespace NullReferencesDemo.Presentation.Implementation
 {
-    public class StockItem
+    public class StockItem : IStockItem
     {
         public string Name { get; private set; }
         public decimal Price { get; private set; }

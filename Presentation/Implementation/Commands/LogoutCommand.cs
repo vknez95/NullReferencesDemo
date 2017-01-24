@@ -1,5 +1,4 @@
 ﻿using NullReferencesDemo.Presentation.Interfaces;
-using System;
 using NullReferencesDemo.Presentation.Implementation.CommandResults;
 
 namespace NullReferencesDemo.Presentation.Implementation.Commands

@@ -1,4 +1,5 @@
 ﻿using NullReferencesDemo.Common;
+using NullReferencesDemo.Domain.Implementation;
 
 namespace NullReferencesDemo.Domain.Interfaces
 {

@@ -1,28 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
+using NullReferencesDemo.Common;
 using NullReferencesDemo.Domain.Interfaces;
 
 namespace NullReferencesDemo.Infrastructure.Implementation
 {
-    public class UserRepository: IUserRepository
+    public class UserRepository : IUserRepository
     {
 
-        private IDictionary<string, IUser> usernameToUser = new Dictionary<string, IUser>();
+        private IList<IUser> users = new List<IUser>();
 
         public void Add(IUser user)
         {
-            this.usernameToUser.Add(user.Username, user);
+            this.users.Add(user);
         }
 
-        public IEnumerable<IUser> Find(string username)
+        public Option<IUser> TryFind(string username)
         {
-            
-            IUser user = null;
-            
-            if (!this.usernameToUser.TryGetValue(username, out user))
-                return new IUser[0];
 
-            return new IUser[] { user };
+            return
+                this.users
+                    .Where(user => user.Username == username)
+                    .Select(user => Option<IUser>.Create(user))
+                    .LazyDefaultIfEmpty(() => Option<IUser>.CreateEmpty())
+                    .Single();
 
         }
     }

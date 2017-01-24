@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using NullReferencesDemo.Common;
+using NullReferencesDemo.Domain.Implementation;
 
 namespace NullReferencesDemo.Domain.Interfaces
 {

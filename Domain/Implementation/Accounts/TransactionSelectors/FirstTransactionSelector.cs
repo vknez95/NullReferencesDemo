@@ -1,22 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using NullReferencesDemo.Common;
 using NullReferencesDemo.Domain.Interfaces;
 
-namespace NullReferencesDemo.Domain.Implementation
+namespace NullReferencesDemo.Domain.Implementation.Accounts.TransactionSelectors
 {
-    public class ConformingTransactionSelector : ITransactionSelector
+    public class FirstTransactionSelector : ITransactionSelector
     {
         public Option<MoneyTransaction> TrySelectOne(IEnumerable<MoneyTransaction> transactions, decimal maxAmount)
         {
 
             return
                 transactions
-                    .Where(trans => maxAmount + trans.Amount >= 0)
                     .Take(1)
+                    .Where(trans => maxAmount + trans.Amount >= 0)
                     .Select(trans => Option<MoneyTransaction>.Create(trans))
-                    .DefaultIfEmpty(Option<MoneyTransaction>.CreateEmpty())
+                    .LazyDefaultIfEmpty(() => Option<MoneyTransaction>.CreateEmpty())
                     .Single();
 
         }

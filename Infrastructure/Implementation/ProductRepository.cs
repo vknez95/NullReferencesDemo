@@ -2,39 +2,35 @@
 using NullReferencesDemo.Domain.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
+using NullReferencesDemo.Domain.Implementation;
 
 namespace NullReferencesDemo.Infrastructure.Implementation
 {
-    public class ProductRepository: IProductRepository
+    public class ProductRepository : IProductRepository
     {
 
-        private IDictionary<string, decimal> nameToPrice;
+        private IList<IProduct> products = new List<IProduct>();
 
         public ProductRepository()
         {
-            
-            this.nameToPrice = new Dictionary<string, decimal>();
-
-            this.nameToPrice.Add("book", 27.46M);
-            this.nameToPrice.Add("pen", 6.28M);
-            this.nameToPrice.Add("ruler", 2.86M);
-
+            products.Add(new ProductData("book", 27.46M));
+            products.Add(new ProductData("pen", 6.28M));
+            products.Add(new ProductData("ruler", 2.86M));
         }
 
         public IEnumerable<IProduct> GetAll()
         {
-            return this.nameToPrice.Select(pair => new ProductData(pair.Key, pair.Value));
+            return this.products;
         }
 
         public Option<IProduct> TryFind(string name)
         {
-            
-            decimal price;
-            if (this.nameToPrice.TryGetValue(name, out price))
-                return Option<IProduct>.Create(new ProductData(name, price));
-
-            return Option<IProduct>.CreateEmpty();
-
+            return
+                this.products
+                    .Where(product => product.Name == name)
+                    .Select(product => Option<IProduct>.Create(product))
+                    .LazyDefaultIfEmpty(() => Option<IProduct>.CreateEmpty())
+                    .Single();
         }
     }
 }

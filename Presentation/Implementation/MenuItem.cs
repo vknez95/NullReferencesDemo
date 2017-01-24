@@ -4,7 +4,7 @@ using NullReferencesDemo.Presentation.Implementation.Commands;
 
 namespace NullReferencesDemo.Presentation.Implementation
 {
-    internal class MenuItem
+    public class MenuItem
     {
 
         private readonly string caption;
@@ -32,6 +32,16 @@ namespace NullReferencesDemo.Presentation.Implementation
             return new MenuItem(caption, hotkey, false, command, isVisible);
         }
 
+        public static MenuItem CreateNonTerminal(string caption, char hotkey, Func<bool> isVisible)
+        {
+            return new MenuItem(caption, hotkey, false, null, isVisible);
+        }
+
+        public static MenuItem CreateInvalid(char hotkey, ICommand command)
+        {
+            return new MenuItem("", hotkey, false, command, () => false);
+        }
+
         public void Display()
         {
 
@@ -44,7 +54,7 @@ namespace NullReferencesDemo.Presentation.Implementation
                 Console.Write(this.caption.Substring(0, pos));
 
             ConsoleColor previousColor = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.Magenta;
             Console.Write(this.hotkey);
             Console.ForegroundColor = previousColor;
 

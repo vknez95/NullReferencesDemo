@@ -1,11 +1,12 @@
 ﻿using System.Linq;
+using NullReferencesDemo.Common;
 using NullReferencesDemo.Domain.Interfaces;
 using NullReferencesDemo.Presentation.Interfaces;
 using NullReferencesDemo.Presentation.PurchaseReports;
 
 namespace NullReferencesDemo.Domain.Implementation
 {
-    internal class User: IUser
+    internal class User : IUser
     {
         public string Username { get; private set; }
         private readonly IAccount account;
@@ -36,7 +37,7 @@ namespace NullReferencesDemo.Domain.Implementation
             return
                 this.account.TryWithdraw(product.Price)
                     .Select(trans => new Receipt(this.Username, product.Name, product.Price))
-                    .DefaultIfEmpty(this.NotEnoughMoneyReport(product.Name, product.Price))
+                    .LazyDefaultIfEmpty(() => this.NotEnoughMoneyReport(product.Name, product.Price))
                     .Single();
         }
 

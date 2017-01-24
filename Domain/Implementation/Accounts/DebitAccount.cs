@@ -1,12 +1,10 @@
 ﻿using System;
-using NullReferencesDemo.Domain.Interfaces;
 using NullReferencesDemo.Common;
 
-namespace NullReferencesDemo.Domain.Implementation
+namespace NullReferencesDemo.Domain.Implementation.Accounts
 {
     public class DebitAccount : AccountBase
     {
-
         public override MoneyTransaction Deposit(decimal amount)
         {
             Contract.Requires<ArgumentException>(amount > 0, "Amount to deposit must be positive.", nameof(amount));

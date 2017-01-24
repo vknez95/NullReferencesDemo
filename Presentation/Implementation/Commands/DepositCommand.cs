@@ -1,29 +1,36 @@
 ﻿using NullReferencesDemo.Presentation.Interfaces;
 using System;
 using NullReferencesDemo.Presentation.Implementation.CommandResults;
+using NullReferencesDemo.Presentation.Interfaces.Validators;
 
 namespace NullReferencesDemo.Presentation.Implementation.Commands
 {
-    public class DepositCommand: ICommand
+    public class DepositCommand : ICommand
     {
 
         private readonly IApplicationServices appServices;
+        private readonly IDepositValidator validator;
 
-        public DepositCommand(IApplicationServices appServices)
+        public DepositCommand(IApplicationServices appServices, IDepositValidator validator)
         {
             this.appServices = appServices;
+            this.validator = validator;
         }
 
         public ICommandResult Execute()
         {
 
             Console.Write("Enter amount to deposit: ");
-            decimal amount = decimal.Parse(Console.ReadLine());
+            string amount = Console.ReadLine();
 
-            this.appServices.Deposit(amount);
+            if (!validator.IsValid(amount))
+                return new InvalidDeposit();
+
+            decimal decAmount = decimal.Parse(amount);
+            this.appServices.Deposit(decAmount);
 
             return new DepositResult(this.appServices.LoggedInUsername,
-                                     amount,
+                                     decAmount,
                                      this.appServices.LoggedInUserBalance);
 
         }

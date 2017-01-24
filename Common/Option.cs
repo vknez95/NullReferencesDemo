@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace NullReferencesDemo.Common
 {
-    public class Option<T>: IEnumerable<T>
+    public class Option<T> : IEnumerable<T>
     {
         private T[] data;
-        
+
         private Option(T[] data)
         {
             this.data = data;

@@ -4,7 +4,7 @@ using System.Linq;
 using NullReferencesDemo.Common;
 using NullReferencesDemo.Domain.Interfaces;
 
-namespace NullReferencesDemo.Domain.Implementation
+namespace NullReferencesDemo.Domain.Implementation.Accounts
 {
     public class CreditAccount : AccountBase
     {

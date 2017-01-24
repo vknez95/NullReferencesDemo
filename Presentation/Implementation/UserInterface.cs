@@ -3,37 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using NullReferencesDemo.Presentation.Interfaces;
 using NullReferencesDemo.Presentation.Implementation.Commands;
+using NullReferencesDemo.Common;
 
 namespace NullReferencesDemo.Presentation.Implementation
 {
-    public class UserInterface: IUserInterface
+    public class UserInterface : IUserInterface
     {
 
         private readonly IApplicationServices appServices;
         private ICommand currentCommand = new DoNothingCommand();
         private readonly IEnumerable<MenuItem> menu;
-
         private readonly ViewLocator viewLocator;
 
-        public UserInterface(IApplicationServices appServices, ViewLocator viewLocator)
+        public UserInterface(IApplicationServices appServices,
+                             ViewLocator viewLocator,
+                             IEnumerable<MenuItem> menu)
         {
 
             this.appServices = appServices;
 
-            this.menu = new MenuItem[]
-            {
-                MenuItem.CreateNonTerminal("Register new user", 'R',
-                    new RegisterCommand(appServices), () => true),
-                MenuItem.CreateNonTerminal("Login", 'L',
-                    new LoginCommand(appServices), () => true),
-                MenuItem.CreateNonTerminal("LogOut", 'O',
-                    new LogoutCommand(appServices), () => appServices.IsUserLoggedIn),
-                MenuItem.CreateNonTerminal("Deposit", 'D',
-                    new DepositCommand(appServices), () => appServices.IsUserLoggedIn),
-                MenuItem.CreateNonTerminal("Purchase", 'P',
-                    new PurchaseCommand(appServices), () => true),
-                MenuItem.CreateTerminal("Quit", 'Q')
-            };
+            this.menu = menu;
 
             this.viewLocator = viewLocator;
 
@@ -54,16 +43,9 @@ namespace NullReferencesDemo.Presentation.Implementation
 
         }
 
-        private void RefreshDisplay()
-        {
-            Console.Clear();
-            this.ShowStatus();
-            this.ShowMenu();
-        }
-
         public void ExecuteCommand()
         {
-            
+
             ICommandResult result = this.currentCommand.Execute();
 
             IView view = this.viewLocator.LocateServiceFor(result);
@@ -76,23 +58,27 @@ namespace NullReferencesDemo.Presentation.Implementation
 
         }
 
+        private void RefreshDisplay()
+        {
+            Console.Clear();
+            this.ShowStatus();
+            this.ShowMenu();
+        }
+
         private void Render(IView view)
         {
 
-            string message = string.Format("Rendering {0}", view.GetType().Name);
-            string delimiter = new string('-', message.Length);
-
-            Console.WriteLine("\n{0}\n{1}\n{0}\n", delimiter, message);
+            Console.WriteLine("");
 
             view.Render();
 
-            Console.WriteLine("\n{0}", delimiter);
+            Console.WriteLine("");
 
         }
 
         private void ShowStatus()
         {
-            
+
             Console.Write("Logged in user: ");
             this.Highlight(this.LoggedInUserDisplay);
             Console.WriteLine();
@@ -128,14 +114,14 @@ namespace NullReferencesDemo.Presentation.Implementation
         private void Highlight(string message)
         {
             ConsoleColor prevColor = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.Cyan;
             Console.Write(message);
             Console.ForegroundColor = prevColor;
         }
 
         private void ShowMenu()
         {
-            
+
             Console.WriteLine("Select operation:");
             Console.WriteLine();
 
@@ -151,7 +137,11 @@ namespace NullReferencesDemo.Presentation.Implementation
 
             ConsoleKeyInfo key = Console.ReadKey(true);
 
-            MenuItem selectedItem = this.menu.Single(item => item.MatchesKey(key.KeyChar));
+            MenuItem selectedItem =
+                this.menu
+                    .Where(item => item.MatchesKey(key.KeyChar))
+                    .LazyDefaultIfEmpty(() => MenuItem.CreateInvalid(key.KeyChar, new InvalidCommand(key.KeyChar)))
+                    .Single();
 
             return selectedItem;
 

@@ -1,17 +1,19 @@
 ﻿using NullReferencesDemo.Application.Interfaces;
 using NullReferencesDemo.Presentation.Interfaces;
-using NullReferencesDemo.Presentation.PurchaseReports;
 using System;
 using System.Collections.Generic;
+using NullReferencesDemo.Common;
 
 namespace NullReferencesDemo.Application.Implementation
 {
-    public class ApplicationServices: IApplicationServices
+    public class ApplicationServices : IApplicationServices
     {
 
         private readonly IDomainServices domainServices;
         private readonly IPurchaseReportFactory reportFactory;
         private string loggedInUsername;
+        private string registrationUsername;
+        private IMoneyAccount userAccount;
 
         public ApplicationServices(IDomainServices domainServices, IPurchaseReportFactory reportFactory)
         {
@@ -20,15 +22,39 @@ namespace NullReferencesDemo.Application.Implementation
             this.reportFactory = reportFactory;
         }
 
-        public void RegisterUser(string username)
+        public void SetRegistrationUsername(string username)
         {
-            this.domainServices.CreateUser(username);
+            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(username), "Username cannot be empty.", nameof(username));
+
+            this.registrationUsername = username;
+        }
+
+        public void SetUserAccount(IMoneyAccount account)
+        {
+            Contract.Requires<ArgumentException>(account != null, "User account cannot be null.", nameof(account));
+
+            this.userAccount = account;
+        }
+
+        public bool RegisterUser(string username, int accountTypeId)
+        {
+            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(username), "Username cannot be empty.", nameof(username));
+
+            bool userRegistered = this.IsUserRegistered(username);
+
+            if (!userRegistered)
+                this.domainServices.CreateUser(username, accountTypeId);
+
+            ClearRegistrationData();
+
+            return !userRegistered;
+
         }
 
         public bool Login(string username)
         {
-            
-            bool loggedIn = this.domainServices.IsRegistered(username);
+
+            bool loggedIn = this.IsUserRegistered(username);
 
             if (loggedIn)
                 this.loggedInUsername = username;
@@ -45,12 +71,36 @@ namespace NullReferencesDemo.Application.Implementation
             }
         }
 
+        public bool IsUserChoosingAccount
+        {
+            get
+            {
+                return !string.IsNullOrEmpty(this.registrationUsername) && this.userAccount == null;
+            }
+        }
+
         public string LoggedInUsername
         {
             get
             {
                 this.AssertUserLoggedIn();
                 return this.loggedInUsername;
+            }
+        }
+
+        public string RegistrationUsername
+        {
+            get
+            {
+                return this.registrationUsername;
+            }
+        }
+
+        public IMoneyAccount UserAccount
+        {
+            get
+            {
+                return this.userAccount;
             }
         }
 
@@ -74,13 +124,12 @@ namespace NullReferencesDemo.Application.Implementation
             }
         }
 
-        private void AssertUserLoggedIn()
+        public bool IsUserRegistered(string username)
         {
-            if (!this.IsUserLoggedIn)
-                throw new InvalidOperationException("No user logged in.");
+            return this.domainServices.IsRegistered(username);
         }
 
-        public IEnumerable<StockItem> GetAvailableItems()
+        public IEnumerable<IStockItem> GetAvailableItems()
         {
             return this.domainServices.GetAvailableItems();
         }
@@ -90,9 +139,21 @@ namespace NullReferencesDemo.Application.Implementation
 
             if (!this.IsUserLoggedIn)
                 return this.reportFactory.CreateNotSignedIn();
-            
+
             return this.domainServices.Purchase(this.loggedInUsername, itemName);
-        
+
+        }
+
+        private void AssertUserLoggedIn()
+        {
+            if (!this.IsUserLoggedIn)
+                throw new InvalidOperationException("No user logged in.");
+        }
+
+        private void ClearRegistrationData()
+        {
+            this.registrationUsername = null;
+            this.userAccount = null;
         }
     }
 }

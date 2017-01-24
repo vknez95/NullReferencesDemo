@@ -1,4 +1,4 @@
-﻿namespace NullReferencesDemo.Domain.Interfaces
+﻿namespace NullReferencesDemo.Domain.Implementation
 {
     public class MoneyTransaction
     {

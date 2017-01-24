@@ -11,11 +11,10 @@ namespace NullReferencesDemo.Common
                 action(obj);
         }
 
-        public static IEnumerable<T> LazyDefaultIfEmpty<T>(this IEnumerable<T> source,
-                                                           Func<T> defaultFactory)
+        public static IEnumerable<T> LazyDefaultIfEmpty<T>(this IEnumerable<T> source, Func<T> defaultFactory)
         {
             bool isEmpty = true;
-            
+
             foreach (T value in source)
             {
                 yield return value;

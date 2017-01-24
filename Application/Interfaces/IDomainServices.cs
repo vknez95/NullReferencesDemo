@@ -5,11 +5,12 @@ namespace NullReferencesDemo.Application.Interfaces
 {
     public interface IDomainServices
     {
-        void CreateUser(string username);
+        void CreateUser(string username, int accountTypeId);
         bool IsRegistered(string username);
         void Deposit(string username, decimal amount);
         decimal GetBalance(string username);
-        IEnumerable<StockItem> GetAvailableItems();
+        IEnumerable<IStockItem> GetAvailableItems();
+        IEnumerable<IMoneyAccount> GetAvailableMoneyAccounts();
         IPurchaseReport Purchase(string username, string itemName);
     }
 }

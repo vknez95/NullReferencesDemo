@@ -3,7 +3,7 @@ using NullReferencesDemo.Presentation.Interfaces;
 
 namespace NullReferencesDemo.Presentation.Implementation
 {
-    public class ViewLocator: ServiceLocator<ICommandResult, IView>
+    public class ViewLocator : ServiceLocator<ICommandResult, IView>
     {
     }
 }

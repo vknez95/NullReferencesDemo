@@ -3,11 +3,10 @@ using System.Linq;
 using NullReferencesDemo.Common;
 using NullReferencesDemo.Domain.Interfaces;
 
-namespace NullReferencesDemo.Domain.Implementation
+namespace NullReferencesDemo.Domain.Implementation.Accounts
 {
-    public abstract class AccountBase: IAccount
+    public abstract class AccountBase : IAccount
     {
-
         private readonly IList<MoneyTransaction> registeredTransactions = new List<MoneyTransaction>();
 
         public virtual decimal Balance
