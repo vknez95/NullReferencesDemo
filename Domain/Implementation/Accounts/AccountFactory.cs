@@ -8,8 +8,10 @@ namespace NullReferencesDemo.Domain.Implementation.Accounts
         public IAccount CreateAccount(int accountTypeId)
         {
             if (accountTypeId == 1)
-                return new DebitAccount();
-            else if (accountTypeId == 2)
+                return new DebitAccount(0);
+            if (accountTypeId == 2)
+                return new DebitAccount(100);
+            else if (accountTypeId == 3)
                 return new CreditAccount(new ConformingTransactionSelector());
             else
                 return new CreditAccount(new FirstTransactionSelector());

@@ -12,9 +12,10 @@ namespace NullReferencesDemo.Infrastructure.Implementation
 
         public AccountTypeRepository()
         {
-            accountTypes.Add(new AccountType(1, "Debit Account", "Debit allowed if funds available."));
-            accountTypes.Add(new AccountType(2, "Credit Account", "Conforming transaction selector."));
-            accountTypes.Add(new AccountType(3, "Credit Account", "First transaction selector."));
+            accountTypes.Add(new AccountType(1, "Debit Account", "0 dollars overdraft limit."));
+            accountTypes.Add(new AccountType(2, "Debit Account", "100 dollars overdarft limit."));
+            accountTypes.Add(new AccountType(3, "Credit Account", "Conforming transaction selector."));
+            accountTypes.Add(new AccountType(4, "Credit Account", "First transaction selector."));
         }
 
         public IEnumerable<IAccountType> GetAll()
